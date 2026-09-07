@@ -59,6 +59,9 @@ const cp = require('child_process')
 
 const { isNewerVersion } = require('./utils/versionUtils')
 const { normalizeUpdateError } = require('./utils/updateErrors')
+// Read-only upstream-nightly watcher. Plain HTTPS, never electron-updater,
+// so watching upstream cannot disturb the selected feed.
+const { fetchNightlyNotice } = require('./utils/upstreamNightly')
 const { ensureSevenZipConfigured } = require('./utils/sevenZipDetect')
 const {
   addVersion, upsertVersion, updateVersion,
@@ -191,6 +194,12 @@ let updateDownloaded = false
 let lastUpdateStatus = { status: 'idle' }
 let installAfterDownload = false
 let activeAppUpdateBranch = null
+// Latest upstream-nightly notice plus its in-flight check and poll timer.
+// Separate from the updater feed: watching upstream never downloads anything
+// and never changes the selected branch.
+let upstreamNightlyNotice = null
+let upstreamNightlyCheck = null
+let appUpdateTimer = null
 
 // Data always lives beside the executable. There is no AppData fallback: the old
 // behaviour silently relocated to %APPDATA%\Atlas whenever the write probe
@@ -340,6 +349,30 @@ function registerMediaAuthHeaders() {
 // Backwards-compatible alias for the original call site.
 function registerLewdCornerMediaHeaders() {
   registerMediaAuthHeaders()
+}
+
+// Dev-only diagnostic for the LewdCorner tier check. When verifyLcTier()
+// reports lcTierMismatch, the LewdCorner shop page parser read no owned
+// rank but the thread probe — which reflects real content access — concluded
+// the user is Plus. That mismatch is the stale-selector signal: the [LewdCorner]
+// config keys (statusPillClass / statusPillOwnedToken / statusPillOwnedText)
+// likely no longer match LC's markup. Gated on !app.isPackaged so it never
+// fires in a shipped build; the user-facing tier gate stays correct regardless
+// because the probe already resolved the real tier.
+function warnOnLcTierMismatch(result) {
+  if (app.isPackaged || !result) return
+  if (result.lcTierMismatch === true) {
+    console.warn(
+      'LewdCorner shop parser looks stale: shop reported \'Free\' but ' +
+      'the thread probe confirmed real content access. Check the [LewdCorner] ' +
+      'statusPill selectors in the config.',
+    )
+    return
+  }
+  if (result.ok && result.tier) {
+    const src = result.fromCache ? ' (cached)' : ''
+    console.log(`LewdCorner tier: ${result.tier}${src}`)
+  }
 }
 
 // ── App data paths ──────────────────────────────────────────────────────────
@@ -520,17 +553,22 @@ function sendUpdateStatus(status, source = 'unknown') {
 }
 
 function normalizeAppUpdateBranch(value) {
-  if (value === 'stable' || value === 'nightly') return value
+  if (value === 'stable' || value === 'nightly' || value === 'patched') return value
   return null
 }
 
 function getDefaultAppUpdateBranch() {
+  // `-patched.` first: fork versions contain `nightly` too
+  // (`0.9.9-patched.nightly.494.1`), only dot-prefixed. A hyphenated
+  // `-nightly` can only be upstream.
+  if (app.getVersion().includes('-patched.')) return 'patched'
   return app.getVersion().includes('-nightly') ? 'nightly' : 'stable'
 }
 
 // The config key under [Updates] that stores the last-installed version for
 // a given branch.
 function versionKeyForBranch(branch) {
+  if (branch === 'patched') return 'patchedVersion'
   return branch === 'nightly' ? 'nightlyVersion' : 'stableVersion'
 }
 
@@ -576,6 +614,11 @@ function configureAppUpdateBranch(branch, { resetStatus = false } = {}) {
   const normalizedBranch = normalizeAppUpdateBranch(branch) || getDefaultAppUpdateBranch()
   const previousBranch = activeAppUpdateBranch
   const branchChanged = Boolean(previousBranch && previousBranch !== normalizedBranch)
+  // A pending installer belongs to its original feed — switching mid-download
+  // would install a binary from the channel just left.
+  if (branchChanged && (installAfterDownload || ['checking', 'downloading', 'downloaded', 'installing'].includes(lastUpdateStatus?.status))) {
+    throw new Error('Finish the current update or restart Atlas before changing the update branch.')
+  }
   activeAppUpdateBranch = normalizedBranch
   // The feed channel decides WHICH manifest electron-updater fetches from the
   // GitHub release: stable builds publish `latest.yml`, while nightly builds
@@ -603,16 +646,19 @@ function configureAppUpdateBranch(branch, { resetStatus = false } = {}) {
   //     last-installed version. For nightly we ensure the baseline carries a
   //     `-nightly` prerelease component so the feed matcher has a channel word
   //     to lock onto even before setting `.channel` takes effect.
-  const isNightly = normalizedBranch === 'nightly'
-  autoUpdater.allowPrerelease = isNightly
+  const channel = normalizedBranch === 'stable' ? 'latest' : normalizedBranch
+  autoUpdater.allowPrerelease = normalizedBranch !== 'stable'
   // Assigning `.channel` also flips allowDowngrade to true internally, so set
   // allowDowngrade explicitly afterwards.
-  autoUpdater.channel = isNightly ? 'nightly' : 'latest'
+  autoUpdater.channel = channel
   autoUpdater.setFeedURL({
     provider: 'github',
-    owner: 'towerwatchman',
+    // The fork channel updates from the fork repo; official channels stay on
+    // upstream. A fork build pointed at upstream would offer to replace itself
+    // with an official build that lacks the fork feed entirely.
+    owner: normalizedBranch === 'patched' ? 'codeon89' : 'towerwatchman',
     repo: 'Atlas',
-    channel: isNightly ? 'nightly' : 'latest',
+    channel,
   })
 
   // electron-updater resolves & caches the provider lazily; setFeedURL already
@@ -696,6 +742,9 @@ function configureAppUpdateBranch(branch, { resetStatus = false } = {}) {
 
 configureAppUpdateBranch(getDefaultAppUpdateBranch())
 autoUpdater.autoDownload = false
+// Quitting must never silently install a downloaded binary, which may be from
+// another channel. Installation only happens via the explicit update action.
+autoUpdater.autoInstallOnAppQuit = false
 
 // ── Updater diagnostics ─────────────────────────────────────────────────────
 // electron-updater's console output only appears in the main-process log, which
@@ -810,6 +859,62 @@ autoUpdater.on('error', (err) => {
     retryable: normalizedError.retryable,
   }, normalizedError.code === 'UPDATE_PACKAGE_NOT_READY' ? 'package-not-ready' : 'error')
 })
+
+// A receipt is stored only for the notice actually shown; the renderer can't
+// suppress an arbitrary future release by naming its tag. Survives restarts
+// through config, so an acknowledged notice stays acknowledged.
+function acknowledgeUpstreamNightly(tag) {
+  if (typeof tag !== 'string' || tag !== upstreamNightlyNotice?.tag) return false
+  const nextConfig = {
+    ...appConfig,
+    Updates: { ...appConfig.Updates, upstreamNightlyTag: tag },
+  }
+  fs.writeFileSync(configPath, ini.stringify(nextConfig))
+  appConfig = nextConfig
+  upstreamNightlyNotice = null
+  return true
+}
+
+// Watching upstream is independent of the installed binary's update source —
+// this only ever emits a notice event, never calls setFeedURL (which would
+// invalidate a fork download in progress).
+function checkUpstreamNightlyUpdates() {
+  if (upstreamNightlyCheck) return upstreamNightlyCheck
+  upstreamNightlyCheck = fetchNightlyNotice(appConfig?.Updates?.upstreamNightlyTag)
+    .then((notice) => {
+      if (!notice || isQuitting || notice.tag === upstreamNightlyNotice?.tag) return
+      upstreamNightlyNotice = notice
+      BrowserWindow.getAllWindows().forEach((win) => {
+        if (!win.isDestroyed()) win.webContents.send('upstream-nightly-available', notice)
+      })
+      updaterLog('UPSTREAM-NIGHTLY', notice.tag)
+    })
+    .catch((err) => updaterLog('UPSTREAM-NIGHTLY-CHECK-FAILED', err.message))
+    .finally(() => { upstreamNightlyCheck = null })
+  return upstreamNightlyCheck
+}
+
+// Background checks share the startup policy below and never interrupt an
+// offer, download or installer already in motion.
+function checkAppUpdatesInBackground() {
+  if (!['idle', 'not-available', 'error'].includes(lastUpdateStatus?.status)) return
+  autoUpdater.checkForUpdates().catch((err) => {
+    const normalizedError = normalizeUpdateError(err)
+    console.warn('Background update check failed:', normalizedError.technicalMessage)
+    // An empty channel is not a failure worth surfacing from an unsolicited
+    // check — stay silent and let the footer remain idle.
+    if (normalizedError.code === 'UPDATE_NO_RELEASE_ON_CHANNEL') {
+      sendUpdateStatus({ status: 'not-available' }, 'background-no-release-on-channel')
+      return
+    }
+    sendUpdateStatus({
+      status: 'error',
+      error: normalizedError.userMessage,
+      code: normalizedError.code,
+      retryable: normalizedError.retryable,
+    }, 'background-check')
+  })
+}
 
 // ── Shared helper functions ─────────────────────────────────────────────────
 
@@ -1421,7 +1526,7 @@ function createWindow() {
   } else {
     mainWindow.loadFile(path.join(__dirname, '../dist/renderer/index.html'))
   }
-  if (process.defaultApp || appConfig?.Interface?.showDebugConsole) {
+  if (appConfig?.Interface?.showDebugConsole) {
     mainWindow.webContents.openDevTools()
   }
   mainWindow.on('maximize', () => mainWindow.webContents.send('window-state-changed', 'maximized'))
@@ -1470,7 +1575,7 @@ function createSettingsWindow(options = {}) {
   } else {
     settingsWindow.loadFile(path.join(__dirname, '../dist/renderer/settings.html'), tourQuery ? { search: tourQuery } : undefined)
   }
-  if (process.defaultApp || appConfig?.Interface?.showDebugConsole) {
+  if (appConfig?.Interface?.showDebugConsole) {
     settingsWindow.webContents.openDevTools()
   }
   settingsWindow.on('maximize', () => settingsWindow.webContents.send('window-state-changed', 'maximized'))
@@ -1522,7 +1627,7 @@ function createThemeBuilderWindow() {
   } else {
     themeBuilderWindow.loadFile(path.join(__dirname, '../dist/renderer/themebuilder.html'))
   }
-  if (process.defaultApp || appConfig?.Interface?.showDebugConsole) {
+  if (appConfig?.Interface?.showDebugConsole) {
     themeBuilderWindow.webContents.openDevTools()
   }
   themeBuilderWindow.on('maximize', () => themeBuilderWindow.webContents.send('window-state-changed', 'maximized'))
@@ -1596,7 +1701,7 @@ function createBannerEditorWindow() {
   } else {
     bannerEditorWindow.loadFile(path.join(__dirname, '../dist/renderer/bannereditor.html'))
   }
-  if (process.defaultApp || appConfig?.Interface?.showDebugConsole) {
+  if (appConfig?.Interface?.showDebugConsole) {
     bannerEditorWindow.webContents.openDevTools()
   }
   bannerEditorWindow.on('maximize', () => bannerEditorWindow.webContents.send('window-state-changed', 'maximized'))
@@ -1680,7 +1785,7 @@ function createImporterWindow(source = 'atlas') {
   ).then(() => {
     console.log('importer.html loaded successfully')
     sendImporterSource(importerSource)
-    if (process.defaultApp || appConfig?.Interface?.showDebugConsole) {
+    if (appConfig?.Interface?.showDebugConsole) {
       importerWindow.webContents.openDevTools()
     }
   }).catch((err) => {
@@ -1722,7 +1827,7 @@ function createGameDetailsWindow(recordId) {
   } else {
     win.loadFile(path.join(__dirname, '../dist/renderer/gamedetails.html'))
   }
-  if (process.defaultApp || appConfig?.Interface?.showDebugConsole) {
+  if (appConfig?.Interface?.showDebugConsole) {
     win.webContents.openDevTools()
   }
   win.on('maximize', () => win.webContents.send('window-state-changed', 'maximized'))
@@ -1795,7 +1900,9 @@ function buildCtx() {
     activeImportSession, activeScanSession, activeLibraryValidation, isQuitting,
     // updater state
     autoUpdater, lastUpdateStatus, updateInfo, updateDownloaded, installAfterDownload,
-    getConfiguredAppUpdateBranch, configureAppUpdateBranch,
+    getConfiguredAppUpdateBranch, configureAppUpdateBranch, getDefaultAppUpdateBranch,
+    get upstreamNightlyNotice() { return upstreamNightlyNotice },
+    acknowledgeUpstreamNightly,
     // path helpers
     getAssetBasePath, getMediaStorageMode, firstMediaPath,
     getMetadataSourceOrder,
@@ -2282,10 +2389,31 @@ app.whenReady().then(async () => {
   // Load encrypted site accounts before the window (and its webRequest cookie
   // hook) come up, then refresh any expired sessions in the background.
   try {
-    accountStore.init(dataDir)
+    accountStore.init(dataDir, appConfig?.LewdCorner)
     accountStore.refreshAllAccounts().catch((err) =>
       console.warn('Account cookie refresh failed:', err.message),
     )
+    // Tier verification: scrape LC membership tier after cookies are fresh.
+    // Runs in the background on startup and periodically. The recheck interval
+    // reads lcTierRecheckHours from config (default 24h); a recheck that finds the
+    // cached tier still fresh is skipped inside verifyLcTier, so this only scrapes
+    // when actually stale. Re-linking the account re-triggers it immediately via
+    // commitAccount's forced verifyLcTier.
+    const lcTierRecheckHours = Number(appConfig?.LewdCorner?.lcTierRecheckHours)
+    const lcTierRecheckInterval =
+      (Number.isFinite(lcTierRecheckHours) ? lcTierRecheckHours : 24) * 60 * 60 * 1000
+    const runLcTierCheck = () =>
+      accountStore.verifyLcTier().then((result) => {
+        warnOnLcTierMismatch(result)
+      })
+    runLcTierCheck().catch((err) =>
+      console.warn('Initial tier check failed:', err.message),
+    )
+    setInterval(() => {
+      runLcTierCheck().catch((err) =>
+        console.warn('Periodic tier check failed:', err.message),
+      )
+    }, lcTierRecheckInterval)
   } catch (err) {
     console.warn('Account store init failed:', err.message)
   }
@@ -2429,30 +2557,23 @@ app.whenReady().then(async () => {
   }
 
   if (appConfig?.Interface?.checkForAppUpdatesOnStartup) {
-    autoUpdater.checkForUpdates().catch((err) => {
-      const normalizedError = normalizeUpdateError(err)
-      console.warn('Startup update check failed:', normalizedError.technicalMessage)
-      // The startup check is a background, unsolicited action. Only surface
-      // outcomes the user can actually act on. A benign "no release on this
-      // channel yet" (nothing published for this branch) is not an error and
-      // must not pop a failure notice on every launch — stay silent and let
-      // the footer remain idle. Real, actionable failures (network, package
-      // not ready, genuine check failure) still surface.
-      if (normalizedError.code === 'UPDATE_NO_RELEASE_ON_CHANNEL') {
-        sendUpdateStatus({ status: 'not-available' }, 'startup-no-release-on-channel')
-        return
-      }
-      sendUpdateStatus({
-        status: 'error',
-        error: normalizedError.userMessage,
-        code: normalizedError.code,
-        retryable: normalizedError.retryable,
-      })
-    })
+    checkAppUpdatesInBackground()
+  }
+  if (!process.defaultApp) {
+    // Upstream news is watched on every build, not just fork ones: fork users
+    // contribute upstream too. The fork feed itself is re-polled on a timer
+    // only while selected — an unselected feed needs no polling.
+    checkUpstreamNightlyUpdates()
+    appUpdateTimer = setInterval(() => {
+      checkUpstreamNightlyUpdates()
+      if (getConfiguredAppUpdateBranch() === 'patched') checkAppUpdatesInBackground()
+    }, 30 * 60 * 1000)
+    appUpdateTimer.unref()
   }
 })
 
 app.on('before-quit', () => {
+  clearInterval(appUpdateTimer)
   stopExtensionServer()
   isQuitting = true
 })

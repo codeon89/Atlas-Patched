@@ -224,11 +224,21 @@ module.exports = function registerSettingsHandlers(ctx) {
       const current = ctx.appConfig || {}
       const nextSettings = { ...current }
       for (const section of Object.keys(incoming)) {
+        // Updater baselines and receipts are main-process state; a stale
+        // settings save must not roll them back.
+        if (section === 'Updates') continue
         const value = incoming[section]
         nextSettings[section] =
           value && typeof value === 'object' && !Array.isArray(value)
             ? { ...(current[section] || {}), ...value }
             : value
+      }
+      const previousUpdateBranch = ctx.getConfiguredAppUpdateBranch?.({ Interface: previousInterface })
+      const nextUpdateBranch = ctx.getConfiguredAppUpdateBranch?.(nextSettings)
+      // Reject before writing, so disk and live config stay untouched.
+      if (previousUpdateBranch !== nextUpdateBranch &&
+          (ctx.installAfterDownload || ['checking', 'downloading', 'downloaded', 'installing'].includes(ctx.lastUpdateStatus?.status))) {
+        throw new Error('Finish the current update or restart Atlas before changing the update branch.')
       }
       ctx.appConfig = nextSettings
       fs.writeFileSync(ctx.configPath, ini.stringify(nextSettings))
@@ -259,15 +269,18 @@ module.exports = function registerSettingsHandlers(ctx) {
         BrowserWindow.getAllWindows().forEach((win) => {
           if (win.isDestroyed()) return
           if (nextShowDebugConsole) {
-            if (!win.webContents.isDevToolsOpened()) win.webContents.openDevTools()
+            // Open in place without stealing focus from Settings.
+            if (!win.webContents.isDevToolsOpened()) win.webContents.openDevTools({ activate: false })
           } else if (win.webContents.isDevToolsOpened()) {
             win.webContents.closeDevTools()
           }
         })
+        // Not every Electron version honors activate: false, so keep Settings on top.
+        const senderWin = BrowserWindow.fromWebContents(event.sender)
+        if (senderWin && !senderWin.isDestroyed()) senderWin.focus()
       }
 
-      const previousUpdateBranch = ctx.getConfiguredAppUpdateBranch?.({ Interface: previousInterface })
-      const nextUpdateBranch = ctx.getConfiguredAppUpdateBranch?.(nextSettings)
+      // Applies a switch that passed validation above.
       if (previousUpdateBranch !== nextUpdateBranch) {
         ctx.configureAppUpdateBranch?.(nextUpdateBranch, { resetStatus: true })
       }
