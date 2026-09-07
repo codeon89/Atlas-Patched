@@ -14,9 +14,9 @@
 
 ## Fork's System Change
   *internal change that's not features but backend requirement for forks to release self-builds*
-  - Support Linux builds & patch ci runs. [#20](https://github.com/codeon89/Atlas/pull/20)
-  - Support `[no-build]` detection in your HEAD commit message when pushing without wanting a release (docs or changelog-only pushes) or merge existing change from original Atlas.[#19](https://github.com/codeon89/Atlas/pull/19) 
-  - Nightly-Patched releases: the fork ships its own Windows + Linux installer line (`{base}-patched.nightly.{nightly}.{p}`) with a third update channel under Settings > App Updates. Patched builds check only the fork feed; upstream nightlies surface as a read-only notice, never a download. See `docs/FORK-PATCHED-RUNBOOK.md`. [#19](https://github.com/codeon89/Atlas/pull/19)
+  - Support Linux builds & patch ci runs. [#20](https://github.com/codeon89/Atlas-Patched/pull/20)
+  - Support `[no-build]` detection in your HEAD commit message when pushing without wanting a release (docs or changelog-only pushes) or merge existing change from original Atlas.[#19](https://github.com/codeon89/Atlas-Patched/pull/19)
+  - Nightly-Patched releases: the fork ships its own Windows + Linux installer line (`{base}-patched.nightly.{nightly}.{p}`) with a third update channel under Settings > App Updates. Patched builds check only the fork feed; upstream nightlies surface as a read-only notice, never a download. See `docs/FORK-PATCHED-RUNBOOK.md`. [#19](https://github.com/codeon89/Atlas-Patched/pull/19)
 
 
 ## Merged to thetowerman/Atlas's Nightly

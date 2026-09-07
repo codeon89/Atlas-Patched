@@ -12,7 +12,7 @@ const upstream = fs.readFileSync(path.join(here, '../.github/workflows/ci.yml'),
 
 describe('ci-patched workflow', () => {
   it('runs only in the fork repo', () => {
-    expect(workflow).toContain("github.repository == 'codeon89/Atlas'")
+    expect(workflow).toContain("github.repository == 'codeon89/Atlas-Patched'")
   })
 
   it('restores node_modules and skips reinstall on a hit', () => {

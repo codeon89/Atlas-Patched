@@ -18,6 +18,6 @@ import { LINKS } from './links.js'
  */
 export function releaseUrlFor(version) {
   const tag = String(version ?? '').trim().replace(/^v+/i, '')
-  const repo = tag.includes('-patched.') ? 'https://github.com/codeon89/Atlas' : LINKS.github
+  const repo = tag.includes('-patched.') ? 'https://github.com/codeon89/Atlas-Patched' : LINKS.github
   return `${repo}/releases/tag/v${tag}`
 }

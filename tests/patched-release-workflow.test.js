@@ -12,7 +12,7 @@ const workflow = fs.readFileSync(path.join(here, '../.github/workflows/nightly-p
 describe('nightly-patched release workflow', () => {
   it('fires only on the fork branch and only in the fork repo', () => {
     expect(workflow).toContain('branches: [nightly-patched]')
-    expect(workflow).toContain("github.repository == 'codeon89/Atlas' && github.ref == 'refs/heads/nightly-patched'")
+    expect(workflow).toContain("github.repository == 'codeon89/Atlas-Patched' && github.ref == 'refs/heads/nightly-patched'")
   })
 
   it('queues runs instead of cancelling (no duplicate release numbers)', () => {
