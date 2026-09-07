@@ -17,7 +17,7 @@ jobs:
     name: Patched checks
     # Never runs outside the fork: if this file ever reaches upstream by a bad
     # merge, it stays silent there instead of double-running their CI.
-    if: github.repository == 'codeon89/Atlas'
+    if: github.repository == 'codeon89/Atlas-Patched'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

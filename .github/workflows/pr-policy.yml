@@ -5,7 +5,7 @@ name: PR Policy
 # the heavier CI job so contributors find out about a wrong base branch in
 # seconds rather than after a fifteen-minute build.
 #
-# Fork divergence (codeon89/Atlas): Rule 1 also accepts `nightly-patched`
+# Fork divergence (codeon89/Atlas-Patched): Rule 1 also accepts `nightly-patched`
 # (the fork's integration branch); changelog and AI-disclosure rules are not
 # enforced. Review upstream changes to this file on every merge-down.
 

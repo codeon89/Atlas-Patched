@@ -108,7 +108,7 @@
     "publish": {
       "provider": "github",
       "owner": "codeon89",
-      "repo": "Atlas",
+      "repo": "Atlas-Patched",
       "releaseType": "draft",
       "channel": "patched",
       "vPrefixedTagName": true

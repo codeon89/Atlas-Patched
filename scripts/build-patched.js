@@ -86,7 +86,7 @@ async function run() {
       // Deliberately explicit: neither an inherited upstream config nor a new
       // remote can redirect a personal publish into someone else's repository.
       publish: {
-        provider: 'github', owner: 'codeon89', repo: 'Atlas', channel: 'patched',
+        provider: 'github', owner: 'codeon89', repo: 'Atlas-Patched', channel: 'patched',
         releaseType: 'draft', vPrefixedTagName: true,
       },
     },

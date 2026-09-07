@@ -65,7 +65,8 @@ describe('patched update channel', () => {
   ])('routes %s to its own feed and installed-version baseline', (branch, owner, channel, prerelease, baseline) => {
     const ctx = updaterContext()
     ctx.configureAppUpdateBranch(branch)
-    expect(ctx.autoUpdater.setFeedURL).toHaveBeenCalledWith({ provider: 'github', owner, repo: 'Atlas', channel })
+    const repo = branch === 'patched' ? 'Atlas-Patched' : 'Atlas'
+    expect(ctx.autoUpdater.setFeedURL).toHaveBeenCalledWith({ provider: 'github', owner, repo, channel })
     expect(ctx.autoUpdater.channel).toBe(channel)
     expect(ctx.autoUpdater.allowPrerelease).toBe(prerelease)
     expect(ctx.autoUpdater.allowDowngrade).toBe(false)

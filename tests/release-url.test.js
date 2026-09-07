@@ -46,7 +46,7 @@ describe('releaseUrlFor', () => {
   // even when the user currently follows an official channel.
   it('points patched builds at the fork releases', () => {
     expect(releaseUrlFor('0.9.9-patched.nightly.494.1')).toBe(
-      'https://github.com/codeon89/Atlas/releases/tag/v0.9.9-patched.nightly.494.1'
+      'https://github.com/codeon89/Atlas-Patched/releases/tag/v0.9.9-patched.nightly.494.1'
     )
   })
 })

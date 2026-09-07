@@ -1,4 +1,4 @@
-# Nightly-Patched releases (codeon89/Atlas)
+# Nightly-Patched releases (codeon89/Atlas-Patched)
 
 Plain-language reference for the fork's own release line. Procedures live in
 `docs/FORK-PATCHED-RUNBOOK.md`.

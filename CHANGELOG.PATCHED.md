@@ -1,15 +1,18 @@
 # CHANGELOG - PATCHED
 
+**v0.9.9-patched.nightly.494.3**
+  - Importer and Library folder scheme now support `{atlasId}`, so installs can be matched back to AtlasDB on re-import / rebuild.[#404](https://github.com/towerwatchman/Atlas/pull/404)
+
 **v0.9.9-patched.nightly.494.2**
   - Removed the stale restart popup and hint on the Show debug console toggle — it applies immediately to all open windows.[#399](https://github.com/towerwatchman/Atlas/pull/399)
     - (Dev-Only) DevTools no longer auto-opens in dev mode unless explicitly enabled in config.
-  - Nightly-Patched: support Linux builds & patch ci runs. [#20](https://github.com/codeon89/Atlas/pull/20)
+  - Nightly-Patched: support Linux builds & patch ci runs. [#20](https://github.com/codeon89/Atlas-Patched/pull/20)
 
 **v0.9.9-patched.nightly.494.1**
   - Update debounce logic for Browse and Library: Search in Catalog Browse and Library now debounces the text input and waits for a pause before filtering. Previously every keystroke updated `activeFilters.text` and ran `filterGamesWithState` (Library) or scheduled a catalog fetch, causing input lag on large libraries and a wasted local-filter pass even while browsing the server-side catalog. The input still echoes instantly from local state; clear bypasses the delay.[#398](https://github.com/towerwatchman/Atlas/pull/398)
   - LewdCorner member tier detection. Atlas now scrapes your LewdCorner account's shop page to determine your membership tier (Standard / Plus) and stores it alongside your credentials. Browse filters content by tier so Plus users see everything while Standard or non-login users only see what their subscription allows.[#391](https://github.com/towerwatchman/Atlas/pull/391)
-  - Support `[no-build]` detection in your HEAD commit message when pushing without wanting a release (docs or changelog-only pushes) or merge existing change from original Atlas.[#19](https://github.com/codeon89/Atlas/pull/19)
-  - Nightly-Patched releases: the fork ships its own Windows + Linux installer line (`{base}-patched.nightly.{nightly}.{p}`) with a third update channel under Settings > App Updates. Patched builds check only the fork feed; upstream nightlies surface as a read-only notice, never a download. See `docs/FORK-PATCHED-RUNBOOK.md`.[#19](https://github.com/codeon89/Atlas/pull/19)
+  - Support `[no-build]` detection in your HEAD commit message when pushing without wanting a release (docs or changelog-only pushes) or merge existing change from original Atlas.[#19](https://github.com/codeon89/Atlas-Patched/pull/19)
+  - Nightly-Patched releases: the fork ships its own Windows + Linux installer line (`{base}-patched.nightly.{nightly}.{p}`) with a third update channel under Settings > App Updates. Patched builds check only the fork feed; upstream nightlies surface as a read-only notice, never a download. See `docs/FORK-PATCHED-RUNBOOK.md`.[#19](https://github.com/codeon89/Atlas-Patched/pull/19)
   
 
 **Previously merged before packaging**

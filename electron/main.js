@@ -657,7 +657,7 @@ function configureAppUpdateBranch(branch, { resetStatus = false } = {}) {
     // upstream. A fork build pointed at upstream would offer to replace itself
     // with an official build that lacks the fork feed entirely.
     owner: normalizedBranch === 'patched' ? 'codeon89' : 'towerwatchman',
-    repo: 'Atlas',
+    repo: normalizedBranch === 'patched' ? 'Atlas-Patched' : 'Atlas',
     channel,
   })
 
