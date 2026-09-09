@@ -1,7 +1,8 @@
 # CUMMULATIVE PATCHES
 
 ## Pending Patched Changes
-  *Changes that's already on the fork and waiting to be reviewed for merge into original Atlas*
+  *Changes that's already on the fork and waiting to be reviewed for merge into original Atlas* 
+  - Downloads: clicking a cover now opens the game entry inside Atlas Library/ Catalog, and clicking the build label (e.g. Full Archive) opens the source thread in your browser. [#406](https://github.com/towerwatchman/Atlas/pull/406)
   - Importer and Library folder scheme now support `{atlasId}`, so installs can be matched back to AtlasDB on re-import / rebuild.[#404](https://github.com/towerwatchman/Atlas/pull/404)
   - Removed the stale restart popup and hint on the Show debug console toggle — it applies immediately to all open windows.[#399](https://github.com/towerwatchman/Atlas/pull/399)
     - (Dev-Only) DevTools no longer auto-opens in dev mode unless explicitly enabled in config.

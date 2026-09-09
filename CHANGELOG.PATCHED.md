@@ -1,5 +1,8 @@
 # CHANGELOG - PATCHED
 
+**v0.9.9-patched.nightly.494.4**
+  - Downloads: clicking a cover now opens the game entry inside Atlas Library/ Catalog, and clicking the build label (e.g. Full Archive) opens the source thread in your browser. [#406](https://github.com/towerwatchman/Atlas/pull/406)
+
 **v0.9.9-patched.nightly.494.3**
   - Importer and Library folder scheme now support `{atlasId}`, so installs can be matched back to AtlasDB on re-import / rebuild.[#404](https://github.com/towerwatchman/Atlas/pull/404)
 
