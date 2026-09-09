@@ -23,7 +23,7 @@ jobs:
     # This file must never publish from anywhere else: not from a fork of this
     # fork, not from a feature branch. Downstream jobs cascade-skip when this
     # one does, so guarding here covers the whole workflow.
-    if: github.repository == 'codeon89/Atlas-Patched' && github.ref == 'refs/heads/nightly-patched'
+    if: github.repository == 'codeon89/Atlas-Patched' && github.ref == 'refs/heads/nightly-patched' && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     outputs:
