@@ -2,6 +2,7 @@
 
 ## Pending Patched Changes
   *Changes that's already on the fork and waiting to be reviewed for merge into original Atlas* 
+  - Add Gofile support. One-file folders queue directly; multi-file folders show a picker. Settings shows free usage (1 TB / 30 days), no login needed. The site token salt is cached locally and re-fetched automatically when Gofile rotates it, so links keep working without updates; guests share one session and one 4s-paced retry per incident to stay inside the ~20 calls/min free budget, with a wait-and-retry message when throttled. [#408](https://github.com/towerwatchman/Atlas/pull/408)
   - Downloads: clicking a cover now opens the game entry inside Atlas Library/ Catalog, and clicking the build label (e.g. Full Archive) opens the source thread in your browser. [#406](https://github.com/towerwatchman/Atlas/pull/406)
   - Importer and Library folder scheme now support `{atlasId}`, so installs can be matched back to AtlasDB on re-import / rebuild.[#404](https://github.com/towerwatchman/Atlas/pull/404)
   - Removed the stale restart popup and hint on the Show debug console toggle — it applies immediately to all open windows.[#399](https://github.com/towerwatchman/Atlas/pull/399)

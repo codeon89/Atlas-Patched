@@ -1,5 +1,8 @@
 # CHANGELOG - PATCHED
 
+**v0.9.9-patched.nightly.494.5**
+  - Add Gofile support. One-file folders queue directly; multi-file folders show a picker. Settings shows free usage (1 TB / 30 days), no login needed. The site token salt is cached locally and re-fetched automatically when Gofile rotates it, so links keep working without updates; guests share one session and one 4s-paced retry per incident to stay inside the ~20 calls/min free budget, with a wait-and-retry message when throttled. [#408](https://github.com/towerwatchman/Atlas/pull/408)
+
 **v0.9.9-patched.nightly.494.4**
   - Downloads: clicking a cover now opens the game entry inside Atlas Library/ Catalog, and clicking the build label (e.g. Full Archive) opens the source thread in your browser. [#406](https://github.com/towerwatchman/Atlas/pull/406)
 
