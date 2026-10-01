@@ -2,17 +2,11 @@
 
 ## Pending Patched Changes
   *Changes that's already on the fork and waiting to be reviewed for merge into original Atlas* 
-  - Add Gofile support. One-file folders queue directly; multi-file folders show a picker. Settings shows free usage (1 TB / 30 days), no login needed. The site token salt is cached locally and re-fetched automatically when Gofile rotates it, so links keep working without updates; guests share one session and one 4s-paced retry per incident to stay inside the ~20 calls/min free budget, with a wait-and-retry message when throttled. [#408](https://github.com/towerwatchman/Atlas/pull/408)
-  - Downloads: clicking a cover now opens the game entry inside Atlas Library/ Catalog, and clicking the build label (e.g. Full Archive) opens the source thread in your browser. [#406](https://github.com/towerwatchman/Atlas/pull/406)
-  - Importer and Library folder scheme now support `{atlasId}`, so installs can be matched back to AtlasDB on re-import / rebuild.[#404](https://github.com/towerwatchman/Atlas/pull/404)
-  - Removed the stale restart popup and hint on the Show debug console toggle — it applies immediately to all open windows.[#399](https://github.com/towerwatchman/Atlas/pull/399)
-    - (Dev-Only) DevTools no longer auto-opens in dev mode unless explicitly enabled in config.
-  - Update debounce logic for Browse and Library: Search in Catalog Browse and Library now debounces the text input and waits for a pause before filtering. Previously every keystroke updated `activeFilters.text` and ran `filterGamesWithState` (Library) or scheduled a catalog fetch, causing input lag on large libraries and a wasted local-filter pass even while browsing the server-side catalog. The input still echoes instantly from local state; clear bypasses the delay.[#398](https://github.com/towerwatchman/Atlas/pull/398)
+
 
 
 ## Exclusive Fork Changes
   *Any fork-only changes that is not accepted for merged from upstream*
-  - LewdCorner member tier detection. Atlas now scrapes your LewdCorner account's shop page to determine your membership tier (Standard / Plus) and stores it alongside your credentials. Browse filters content by tier so Plus users see everything while Standard or non-login users only see what their subscription allows.[#391](https://github.com/towerwatchman/Atlas/pull/391)
 
 ## Fork's System Change
   *internal change that's not features but backend requirement for forks to release self-builds*
@@ -22,6 +16,13 @@
 
 
 ## Merged to thetowerman/Atlas's Nightly
+  - LewdCorner member tier detection. Atlas now scrapes your LewdCorner account's shop page to determine your membership tier (Standard / Plus) and stores it alongside your credentials. Browse filters content by tier so Plus users see everything while Standard or non-login users only see what their subscription allows.[#391](https://github.com/towerwatchman/Atlas/pull/391)
+  - Add Gofile support. One-file folders queue directly; multi-file folders show a picker. Settings shows free usage (1 TB / 30 days), no login needed. The site token salt is cached locally and re-fetched automatically when Gofile rotates it, so links keep working without updates; guests share one session and one 4s-paced retry per incident to stay inside the ~20 calls/min free budget, with a wait-and-retry message when throttled. [#408](https://github.com/towerwatchman/Atlas/pull/408)
+  - Downloads: clicking a cover now opens the game entry inside Atlas Library/ Catalog, and clicking the build label (e.g. Full Archive) opens the source thread in your browser. [#406](https://github.com/towerwatchman/Atlas/pull/406)
+  - Importer and Library folder scheme now support `{atlasId}`, so installs can be matched back to AtlasDB on re-import / rebuild.[#404](https://github.com/towerwatchman/Atlas/pull/404)
+  - Removed the stale restart popup and hint on the Show debug console toggle — it applies immediately to all open windows.[#399](https://github.com/towerwatchman/Atlas/pull/399)
+    - (Dev-Only) DevTools no longer auto-opens in dev mode unless explicitly enabled in config.
+  - Update debounce logic for Browse and Library: Search in Catalog Browse and Library now debounces the text input and waits for a pause before filtering. Previously every keystroke updated `activeFilters.text` and ran `filterGamesWithState` (Library) or scheduled a catalog fetch, causing input lag on large libraries and a wasted local-filter pass even while browsing the server-side catalog. The input still echoes instantly from local state; clear bypasses the delay.[#398](https://github.com/towerwatchman/Atlas/pull/398)
   - Catalog tag filtering now matches Library and use exact-token filtering (avoid issue of -male +female return no result).[#394](https://github.com/towerwatchman/Atlas/pull/394)
   - Fixed MEGA v1 test timeout — legacy key derivation is intentionally slow and needed a longer test timeout.[#392](https://github.com/towerwatchman/Atlas/pull/392)
   - Fix multiple executable chooser rendering logic, and redo the executable chooser UI.[#389](https://github.com/towerwatchman/Atlas/pull/389)
