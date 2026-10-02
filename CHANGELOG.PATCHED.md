@@ -1,5 +1,8 @@
 # CHANGELOG - PATCHED
 
+**v0.9.10-patched.nightly.503.1**
+- LewdCorner download support. The Update dialog now shows F95zone and LewdCorner tabs for games linked to both sites, each loading only when opened. LewdCorner links use a separate per-game cache and the same tier rule as Browse, and masked-link resolves now use the session that matches the link. [#414](https://github.com/towerwatchman/Atlas/pull/414)
+
 **v0.9.9-patched.nightly.494.5**
   - Add Gofile support. One-file folders queue directly; multi-file folders show a picker. Settings shows free usage (1 TB / 30 days), no login needed. The site token salt is cached locally and re-fetched automatically when Gofile rotates it, so links keep working without updates; guests share one session and one 4s-paced retry per incident to stay inside the ~20 calls/min free budget, with a wait-and-retry message when throttled. [#408](https://github.com/towerwatchman/Atlas/pull/408)
 

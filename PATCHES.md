@@ -2,9 +2,8 @@
 
 ## Pending Patched Changes
   *Changes that's already on the fork and waiting to be reviewed for merge into original Atlas* 
-
-
-
+  - LewdCorner download support. The Update dialog now shows F95zone and LewdCorner tabs for games linked to both sites, each loading only when opened. LewdCorner links use a separate per-game cache and the same tier rule as Browse, and masked-link resolves now use the session that matches the link. [#414](https://github.com/towerwatchman/Atlas/pull/414)
+    
 ## Exclusive Fork Changes
   *Any fork-only changes that is not accepted for merged from upstream*
 
