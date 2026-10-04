@@ -5,7 +5,7 @@
   - Cummulative Steam previews & assets fix: [#416](https://github.com/towerwatchman/Atlas/pull/416)
     - Fixed Steam-version previews rendering twice in download mode. 
     - Scope Steam previews / banner / trailers, logo into season.
-    
+
 ## Exclusive Fork Changes
   *Any fork-only changes that is not accepted for merged from upstream*
 
@@ -14,7 +14,6 @@
   - Support Linux builds & patch ci runs. [#20](https://github.com/codeon89/Atlas-Patched/pull/20)
   - Support `[no-build]` detection in your HEAD commit message when pushing without wanting a release (docs or changelog-only pushes) or merge existing change from original Atlas.[#19](https://github.com/codeon89/Atlas-Patched/pull/19)
   - Nightly-Patched releases: the fork ships its own Windows + Linux installer line (`{base}-patched.nightly.{nightly}.{p}`) with a third update channel under Settings > App Updates. Patched builds check only the fork feed; upstream nightlies surface as a read-only notice, never a download. See `docs/FORK-PATCHED-RUNBOOK.md`. [#19](https://github.com/codeon89/Atlas-Patched/pull/19)
-
 
 ## Merged to thetowerman/Atlas's Nightly
   - LewdCorner download support. The Update dialog now shows F95zone and LewdCorner tabs for games linked to both sites, each loading only when opened. LewdCorner links use a separate per-game cache and the same tier rule as Browse, and masked-link resolves now use the session that matches the link. [#414](https://github.com/towerwatchman/Atlas/pull/414)
