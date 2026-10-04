@@ -2,7 +2,7 @@
 
 ## Pending Patched Changes
   *Changes that's already on the fork and waiting to be reviewed for merge into original Atlas* 
-  - LewdCorner download support. The Update dialog now shows F95zone and LewdCorner tabs for games linked to both sites, each loading only when opened. LewdCorner links use a separate per-game cache and the same tier rule as Browse, and masked-link resolves now use the session that matches the link. [#414](https://github.com/towerwatchman/Atlas/pull/414)
+  - Fixed Steam-version previews rendering twice in download mode. Use identifiable content hash in URL to create twin pair dedup besides exact remote_url check. [#416](https://github.com/towerwatchman/Atlas/pull/416)
     
 ## Exclusive Fork Changes
   *Any fork-only changes that is not accepted for merged from upstream*
@@ -15,6 +15,7 @@
 
 
 ## Merged to thetowerman/Atlas's Nightly
+  - LewdCorner download support. The Update dialog now shows F95zone and LewdCorner tabs for games linked to both sites, each loading only when opened. LewdCorner links use a separate per-game cache and the same tier rule as Browse, and masked-link resolves now use the session that matches the link. [#414](https://github.com/towerwatchman/Atlas/pull/414)
   - LewdCorner member tier detection. Atlas now scrapes your LewdCorner account's shop page to determine your membership tier (Standard / Plus) and stores it alongside your credentials. Browse filters content by tier so Plus users see everything while Standard or non-login users only see what their subscription allows.[#391](https://github.com/towerwatchman/Atlas/pull/391)
   - Add Gofile support. One-file folders queue directly; multi-file folders show a picker. Settings shows free usage (1 TB / 30 days), no login needed. The site token salt is cached locally and re-fetched automatically when Gofile rotates it, so links keep working without updates; guests share one session and one 4s-paced retry per incident to stay inside the ~20 calls/min free budget, with a wait-and-retry message when throttled. [#408](https://github.com/towerwatchman/Atlas/pull/408)
   - Downloads: clicking a cover now opens the game entry inside Atlas Library/ Catalog, and clicking the build label (e.g. Full Archive) opens the source thread in your browser. [#406](https://github.com/towerwatchman/Atlas/pull/406)

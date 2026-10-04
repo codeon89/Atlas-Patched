@@ -1,5 +1,8 @@
 # CHANGELOG - PATCHED
 
+**v0.9.10-patched.nightly.504.1**
+- Fixed Steam-version previews rendering twice in download mode. Use identifiable content hash in URL to create twin pair dedup besides exact remote_url check. [#416](https://github.com/towerwatchman/Atlas/pull/416)
+
 **v0.9.10-patched.nightly.503.1**
 - LewdCorner download support. The Update dialog now shows F95zone and LewdCorner tabs for games linked to both sites, each loading only when opened. LewdCorner links use a separate per-game cache and the same tier rule as Browse, and masked-link resolves now use the session that matches the link. [#414](https://github.com/towerwatchman/Atlas/pull/414)
 
