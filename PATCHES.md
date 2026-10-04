@@ -3,7 +3,8 @@
 ## Pending Patched Changes
   *Changes that's already on the fork and waiting to be reviewed for merge into original Atlas* 
   - Fixed Steam-version previews rendering twice in download mode. Use identifiable content hash in URL to create twin pair dedup besides exact remote_url check. [#416](https://github.com/towerwatchman/Atlas/pull/416)
-    
+  - Fixed multi-season Steam galleries mixing seasons and doubling pictures. Downloaded files for an unselected season no longer leak into the picked season's view. [#416](https://github.com/towerwatchman/Atlas/pull/416)
+
 ## Exclusive Fork Changes
   *Any fork-only changes that is not accepted for merged from upstream*
 
