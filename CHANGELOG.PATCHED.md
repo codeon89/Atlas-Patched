@@ -1,6 +1,12 @@
 # CHANGELOG - PATCHED
-**v0.9.10-patched.nightly.504.2**
+**v0.9.10-patched.nightly.504.4**
+- Cummulative Steam previews & assets fix:
+  - Fixed Steam-version previews rendering twice in download mode. 
+  - Scope Steam previews / banner / trailers, logo into season.
+
+**v0.9.10-patched.nightly.504.3**
  - Fixed season galleries falling back to shared-thread art with no trailers when a season's Steam rows exist but are not atlas-linked. [#416](https://github.com/towerwatchman/Atlas/pull/416)
+ 
 **v0.9.10-patched.nightly.504.2**
 - Fixed multi-season Steam galleries mixing seasons and doubling pictures. Downloaded files for an unselected season no longer leak into the picked season's view. [#416](https://github.com/towerwatchman/Atlas/pull/416)
 
