@@ -1,6 +1,8 @@
 # CHANGELOG - PATCHED
 **v0.9.10-patched.nightly.504.2**
-- Fixed multi-season Steam galleries mixing seasons and doubling pictures. Downloaded files for an unselected season no longer leak into the picked season's view.
+ - Fixed season galleries falling back to shared-thread art with no trailers when a season's Steam rows exist but are not atlas-linked. [#416](https://github.com/towerwatchman/Atlas/pull/416)
+**v0.9.10-patched.nightly.504.2**
+- Fixed multi-season Steam galleries mixing seasons and doubling pictures. Downloaded files for an unselected season no longer leak into the picked season's view. [#416](https://github.com/towerwatchman/Atlas/pull/416)
 
 **v0.9.10-patched.nightly.504.1**
 - Fixed Steam-version previews rendering twice in download mode. Use identifiable content hash in URL to create twin pair dedup besides exact remote_url check. [#416](https://github.com/towerwatchman/Atlas/pull/416)
