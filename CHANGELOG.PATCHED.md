@@ -1,6 +1,8 @@
 # CHANGELOG - PATCHED
+
 **v0.9.10-patched.nightly.508.1**
-- Add Browser selection for external links opening under Settings -> Interface. [#420](https://github.com/towerwatchman/Atlas/pull/420) [#422](https://github.com/towerwatchman/Atlas/pull/422) [#423](https://github.com/towerwatchman/Atlas/pull/423)
+- Add Browser selection for external links opening under Settings -> Interface. [#420](https://github.com/towerwatchman/Atlas/pull/420)
+- Fixed: installing a game in Download mode now downloads its images in the background once the install finishes, paced by the Delay after each media request setting with per-source rate-limit pauses like import and refresh. Add logic to preserve download image even if server url change. [#422](https://github.com/towerwatchman/Atlas/pull/422) [#423](https://github.com/towerwatchman/Atlas/pull/423)
 
 **v0.9.10-patched.nightly.504.4**
 - Cummulative Steam previews & assets fix: [#416](https://github.com/towerwatchman/Atlas/pull/416)
