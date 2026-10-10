@@ -1,6 +1,9 @@
 # CHANGELOG - PATCHED
+**v0.9.10-patched.nightly.508.1**
+- Add Browser selection for external links opening under Settings -> Interface. [#420](https://github.com/towerwatchman/Atlas/pull/420) [#422](https://github.com/towerwatchman/Atlas/pull/422) [#423](https://github.com/towerwatchman/Atlas/pull/423)
+
 **v0.9.10-patched.nightly.504.4**
-- Cummulative Steam previews & assets fix:
+- Cummulative Steam previews & assets fix: [#416](https://github.com/towerwatchman/Atlas/pull/416)
   - Fixed Steam-version previews rendering twice in download mode. 
   - Scope Steam previews / banner / trailers, logo into season.
 

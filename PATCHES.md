@@ -2,9 +2,6 @@
 
 ## Pending Patched Changes
   *Changes that's already on the fork and waiting to be reviewed for merge into original Atlas* 
-  - Cummulative Steam previews & assets fix: [#416](https://github.com/towerwatchman/Atlas/pull/416)
-    - Fixed Steam-version previews rendering twice in download mode. 
-    - Scope Steam previews / banner / trailers, logo into season.
 
 ## Exclusive Fork Changes
   *Any fork-only changes that is not accepted for merged from upstream*
@@ -16,6 +13,10 @@
   - Nightly-Patched releases: the fork ships its own Windows + Linux installer line (`{base}-patched.nightly.{nightly}.{p}`) with a third update channel under Settings > App Updates. Patched builds check only the fork feed; upstream nightlies surface as a read-only notice, never a download. See `docs/FORK-PATCHED-RUNBOOK.md`. [#19](https://github.com/codeon89/Atlas-Patched/pull/19)
 
 ## Merged to thetowerman/Atlas's Nightly
+  - Add Browser selection for external links opening under Settings -> Interface. [#420](https://github.com/towerwatchman/Atlas/pull/420) [#422](https://github.com/towerwatchman/Atlas/pull/422) [#423](https://github.com/towerwatchman/Atlas/pull/423)
+  - Cummulative Steam previews & assets fix: [#416](https://github.com/towerwatchman/Atlas/pull/416)
+    - Fixed Steam-version previews rendering twice in download mode. 
+    - Scope Steam previews / banner / trailers, logo into season.
   - LewdCorner download support. The Update dialog now shows F95zone and LewdCorner tabs for games linked to both sites, each loading only when opened. LewdCorner links use a separate per-game cache and the same tier rule as Browse, and masked-link resolves now use the session that matches the link. [#414](https://github.com/towerwatchman/Atlas/pull/414)
   - LewdCorner member tier detection. Atlas now scrapes your LewdCorner account's shop page to determine your membership tier (Standard / Plus) and stores it alongside your credentials. Browse filters content by tier so Plus users see everything while Standard or non-login users only see what their subscription allows.[#391](https://github.com/towerwatchman/Atlas/pull/391)
   - Add Gofile support. One-file folders queue directly; multi-file folders show a picker. Settings shows free usage (1 TB / 30 days), no login needed. The site token salt is cached locally and re-fetched automatically when Gofile rotates it, so links keep working without updates; guests share one session and one 4s-paced retry per incident to stay inside the ~20 calls/min free budget, with a wait-and-retry message when throttled. [#408](https://github.com/towerwatchman/Atlas/pull/408)
