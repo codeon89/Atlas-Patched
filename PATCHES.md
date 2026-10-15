@@ -13,6 +13,7 @@
   - Nightly-Patched releases: the fork ships its own Windows + Linux installer line (`{base}-patched.nightly.{nightly}.{p}`) with a third update channel under Settings > App Updates. Patched builds check only the fork feed; upstream nightlies surface as a read-only notice, never a download. See `docs/FORK-PATCHED-RUNBOOK.md`. [#19](https://github.com/codeon89/Atlas-Patched/pull/19)
 
 ## Merged to thetowerman/Atlas's Nightly
+ - Add `Original Name` field in Edit Game Details section. Search now consider original_name in the rebuilt search index [#440](https://github.com/towerwatchman/Atlas/pull/440)
   - Add Browser selection for external links opening under Settings -> Interface. [#420](https://github.com/towerwatchman/Atlas/pull/420)
   - Fixed: installing a game in Download mode now downloads its images in the background once the install finishes, paced by the Delay after each media request setting with per-source rate-limit pauses like import and refresh. Add logic to preserve download image even if server url change. [#422](https://github.com/towerwatchman/Atlas/pull/422) [#423](https://github.com/towerwatchman/Atlas/pull/423)
   - Cummulative Steam previews & assets fix: [#416](https://github.com/towerwatchman/Atlas/pull/416)

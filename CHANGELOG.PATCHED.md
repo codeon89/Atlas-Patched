@@ -1,5 +1,8 @@
 # CHANGELOG - PATCHED
 
+**v0.9.10-patched.nightly.509.1**
+- Add `Original Name` field in Edit Game Details section. Search now consider original_name in the rebuilt search index [#440](https://github.com/towerwatchman/Atlas/pull/440)
+
 **v0.9.10-patched.nightly.508.1**
 - Add Browser selection for external links opening under Settings -> Interface. [#420](https://github.com/towerwatchman/Atlas/pull/420)
 - Fixed: installing a game in Download mode now downloads its images in the background once the install finishes, paced by the Delay after each media request setting with per-source rate-limit pauses like import and refresh. Add logic to preserve download image even if server url change. [#422](https://github.com/towerwatchman/Atlas/pull/422) [#423](https://github.com/towerwatchman/Atlas/pull/423)
