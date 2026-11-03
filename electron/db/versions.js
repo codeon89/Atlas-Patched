@@ -1493,12 +1493,26 @@ const getCatalogGamesFromUnion = (appPath, isDev, options = {}) => {
         const year = new Date(now).getFullYear();
         min = new Date(year, 0, 1).getTime();
         max = new Date(year + 1, 0, 1).getTime() - 1;
+      } else if (range === 'custom') {
+        const fromMs = filters.dateFrom ? Date.parse(`${filters.dateFrom}T00:00:00`) : Number.NaN;
+        const toMs = filters.dateTo ? Date.parse(`${filters.dateTo}T23:59:59.999`) : Number.NaN;
+        min = Number.isFinite(fromMs) ? fromMs : null;
+        max = Number.isFinite(toMs) ? toMs : null;
+        if (min === null && max === null) return;
       } else {
         return;
       }
       const dateExpr = dateMsExpression(field);
-      filterWhereParts.push(`(${dateExpr}) BETWEEN ? AND ?`);
-      filterParams.push(min, max);
+      // Separate >= / <= instead of BETWEEN: BETWEEN min AND NULL is always
+      // false in SQLite, and the slider leaves dateTo empty.
+      if (min !== null) {
+        filterWhereParts.push(`(${dateExpr}) >= ?`);
+        filterParams.push(min);
+      }
+      if (max !== null) {
+        filterWhereParts.push(`(${dateExpr}) <= ?`);
+        filterParams.push(max);
+      }
     };
     const browseSource = String(filters.browseSource || filters.source || 'all').toLowerCase();
     if (browseSource === 'steam') {
